@@ -19,8 +19,40 @@ class GameOfLife {
     //  [0, 0, 0],
     //  [0, 0, 0],
     // ]
+    let newBoard = [];
+    for (let i = 0; i < this.height; i++){
+      let row = []
+      for (let j = 0; j < this.width; j++){
+        row.push(0)
+      }
+      newBoard.push(row)
+    }
+    return newBoard;
   }
 
+  getCell(row, col) {
+    if (row < 0 || col < 0) {
+      return false
+    }
+    if (row >= this.height || col >= this.width){
+      return false
+    }
+    return this.board[row][col]
+  }
+
+  setCell(value, row, col){
+    if (this.getCell(row, col) >= 0){
+      this.board[row][col] = value
+    }
+  }
+
+  toggleCell(row, col){
+    if (this.getCell(row, col) === 0){
+      this.setCell(1, row, col)
+    } else if (this.getCell(row, col) === 1){
+      this.setCell(0, row, col)
+    }
+  }
 
   /**
    * Return the amount of living neighbors around a given coordinate.
@@ -28,6 +60,16 @@ class GameOfLife {
 
   livingNeighbors(row, col) {
     // TODO: Return the count of living neighbors.
+    let total = 0;
+    for (let i = row - 1; i <= row + 1; i++){
+      for (let j = col - 1; j <= col + 1; j++){
+        if (this.getCell(i, j)){
+          total += this.getCell(i, j)
+        }
+      }
+    }
+    total -= this.getCell(row, col);
+    return total;
   }
 
 
@@ -37,6 +79,19 @@ class GameOfLife {
   
   tick() {
     const newBoard = this.makeBoard();
+    for (let i = 0; i < this.height; i++){
+      for (let j = 0; j < this.width; j++){
+        let curr = this.board[i][j];
+        if (curr === 0 && this.livingNeighbors(i, j) === 3){
+          newBoard[i][j] = 1
+        } else if (curr === 1 && (this.livingNeighbors(i, j) === 2 || this.livingNeighbors(i, j) === 3)){
+          newBoard[i][j] = 1
+        } else {
+          newBoard[i][j] = 0
+        }
+      }
+    }
+
     // TODO: Here is where you want to loop through all the cells
     // on the existing board and determine, based on it's neighbors,
     // whether the cell should be dead or alive in the new board 
